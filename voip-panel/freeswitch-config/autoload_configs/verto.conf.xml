@@ -1,0 +1,22 @@
+<configuration name="verto.conf" description="HTML5 Verto Endpoint">
+  <settings>
+    <param name="debug" value="0"/>
+    <param name="enable-text" value="true"/>
+  </settings>
+  
+  <profiles>
+    <profile name="default">
+      <param name="bind-local" value="0.0.0.0:8081"/>
+      <param name="bind-local" value="[::]:8081"/>
+      <param name="secure-combined" value="/etc/freeswitch/certs/wss.pem"/>
+      <param name="secure-chain" value="/etc/freeswitch/certs/wss.pem"/>
+      <param name="rtp-ip" value="$${local_ip_v4}"/>
+      <param name="ext-rtp-ip" value="$${external_rtp_ip}"/>
+      <param name="local-network" value="localnet.auto"/>
+      <param name="outbound-codec-string" value="opus,h264,vp8"/>
+      <param name="inbound-codec-string" value="opus,h264,vp8"/>
+      <param name="apply-candidate-acl" value="localnet.auto"/>
+      <param name="timer-name" value="soft"/>
+    </profile>
+  </profiles>
+</configuration>
