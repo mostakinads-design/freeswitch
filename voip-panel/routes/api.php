@@ -13,7 +13,7 @@ use App\Http\Controllers\Api\ConferenceController;
 use App\Http\Controllers\Api\GatewayController;
 use App\Http\Controllers\Api\DialerController;
 
-Route::prefix('api')->middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     // Dashboard
     Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
     
