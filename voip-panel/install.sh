@@ -71,7 +71,13 @@ apt-get install -y \
     php8.2-bcmath \
     composer \
     redis-server \
-    supervisor
+    supervisor \
+    nodejs \
+    npm
+
+# Update npm to latest version
+log_info "Updating npm to latest version..."
+npm install -g npm@latest
 
 # Install FreeSWITCH from SignalWire
 log_info "Installing FreeSWITCH from SignalWire..."
@@ -135,16 +141,30 @@ if [ -d "$PANEL_DIR" ]; then
     mv $PANEL_DIR ${PANEL_DIR}_backup_$(date +%Y%m%d_%H%M%S)
 fi
 
-# Copy panel files
-cp -r /path/to/voip-panel $PANEL_DIR
-cd $PANEL_DIR
+# Get the script directory
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Install dependencies
+# Copy panel files
+log_info "Copying panel files from $SCRIPT_DIR to $PANEL_DIR..."
+cp -r "$SCRIPT_DIR" "$PANEL_DIR"
+cd "$PANEL_DIR"
+
+# Install PHP dependencies
 log_info "Installing PHP dependencies..."
 composer install --no-dev --optimize-autoloader
 
+# Install Node.js dependencies
+log_info "Installing latest Node.js dependencies..."
+npm install
+
+# Build frontend assets
+log_info "Building frontend assets..."
+npm run build
+
 # Setup environment
-cp .env.example .env
+if [ ! -f .env ]; then
+    cp .env.example .env
+fi
 
 # Generate app key
 php artisan key:generate
@@ -158,11 +178,15 @@ sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=VoipP@ss123!/' .env
 log_info "Running database migrations..."
 php artisan migrate --force
 
+# Install Laravel Breeze
+log_info "Installing Laravel Breeze..."
+php artisan breeze:install api --no-interaction
+
 # Set permissions
-chown -R www-data:www-data $PANEL_DIR
-chmod -R 755 $PANEL_DIR
-chmod -R 775 $PANEL_DIR/storage
-chmod -R 775 $PANEL_DIR/bootstrap/cache
+chown -R www-data:www-data "$PANEL_DIR"
+chmod -R 755 "$PANEL_DIR"
+chmod -R 775 "$PANEL_DIR/storage"
+chmod -R 775 "$PANEL_DIR/bootstrap/cache"
 
 # Configure Nginx
 log_info "Configuring Nginx..."

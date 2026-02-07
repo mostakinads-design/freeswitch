@@ -69,6 +69,8 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+  linkActiveClass: 'border-indigo-500 text-gray-900',
+  linkExactActiveClass: 'border-indigo-500 text-gray-900',
 });
 
 router.beforeEach((to, from, next) => {
