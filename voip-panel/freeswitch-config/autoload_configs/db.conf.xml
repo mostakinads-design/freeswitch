@@ -1,0 +1,6 @@
+<configuration name="db.conf" description="Database Configuration">
+  <settings>
+    <!-- Database configuration for mod_db -->
+    <param name="odbc-dsn" value="mariadb://voipuser:VoipP@ss123!@localhost/voip_panel"/>
+  </settings>
+</configuration>

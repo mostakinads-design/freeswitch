@@ -1,0 +1,86 @@
+<include>
+  <!-- Dynamic extension configuration from database -->
+  <extension name="local_extension">
+    <condition field="destination_number" expression="^(\d{3,5})$">
+      <action application="export" data="dialed_extension=$1"/>
+      <action application="bind_meta_app" data="1 b s execute_extension::dx XML features"/>
+      <action application="bind_meta_app" data="2 b s record_session::$${recordings_dir}/${caller_id_number}.${strftime(%Y-%m-%d-%H-%M-%S)}.wav"/>
+      <action application="bind_meta_app" data="3 b s execute_extension::cf XML features"/>
+      <action application="set" data="ringback=${us-ring}"/>
+      <action application="set" data="transfer_ringback=$${hold_music}"/>
+      <action application="set" data="call_timeout=30"/>
+      <action application="set" data="hangup_after_bridge=true"/>
+      <action application="set" data="continue_on_fail=true"/>
+      <action application="hash" data="insert/${domain_name}-call_return/${dialed_extension}/${caller_id_number}"/>
+      <action application="hash" data="insert/${domain_name}-last_dial_ext/${dialed_extension}/${uuid}"/>
+      <action application="set" data="called_party_callgroup=${user_data(${dialed_extension}@${domain_name} var callgroup)}"/>
+      <action application="bridge" data="user/${dialed_extension}@${domain_name}"/>
+      <action application="answer"/>
+      <action application="sleep" data="1000"/>
+      <action application="voicemail" data="default ${domain_name} ${dialed_extension}"/>
+    </condition>
+  </extension>
+
+  <!-- DID routing -->
+  <extension name="did_routing">
+    <condition field="destination_number" expression="^(\d{10,15})$">
+      <action application="lua" data="did_router.lua"/>
+    </condition>
+  </extension>
+
+  <!-- IVR routing -->
+  <extension name="ivr_routing">
+    <condition field="destination_number" expression="^ivr_(\d+)$">
+      <action application="lua" data="ivr_handler.lua $1"/>
+    </condition>
+  </extension>
+
+  <!-- Ring group routing -->
+  <extension name="ring_group">
+    <condition field="destination_number" expression="^(7\d{3})$">
+      <action application="set" data="ringback=${us-ring}"/>
+      <action application="set" data="call_timeout=30"/>
+      <action application="lua" data="ring_group.lua $1"/>
+    </condition>
+  </extension>
+
+  <!-- Queue/Call center -->
+  <extension name="queue_routing">
+    <condition field="destination_number" expression="^(8\d{3})$">
+      <action application="answer"/>
+      <action application="set" data="result=${lua(queue_handler.lua $1)}"/>
+      <action application="callcenter" data="$1@default"/>
+    </condition>
+  </extension>
+
+  <!-- Conference -->
+  <extension name="conference">
+    <condition field="destination_number" expression="^(9\d{3,4})$">
+      <action application="answer"/>
+      <action application="conference" data="$1@default"/>
+    </condition>
+  </extension>
+
+  <!-- Video conference via Verto -->
+  <extension name="video_conference">
+    <condition field="destination_number" expression="^(3\d{3,4})$">
+      <action application="answer"/>
+      <action application="set" data="conference_auto_outcall_caller_id_name=$${outbound_caller_name}"/>
+      <action application="set" data="conference_auto_outcall_caller_id_number=$${outbound_caller_id}"/>
+      <action application="set" data="conference_auto_outcall_timeout=60"/>
+      <action application="set" data="conference_auto_outcall_flags=mute"/>
+      <action application="conference" data="$1@video-mcu-stereo"/>
+    </condition>
+  </extension>
+
+  <!-- Outbound calls through gateway -->
+  <extension name="outbound">
+    <condition field="destination_number" expression="^(\d{10,15})$">
+      <action application="set" data="effective_caller_id_name=${outbound_caller_id_name}"/>
+      <action application="set" data="effective_caller_id_number=${outbound_caller_id_number}"/>
+      <action application="set" data="hangup_after_bridge=true"/>
+      <action application="set" data="continue_on_fail=true"/>
+      <action application="lua" data="lcr_handler.lua $1"/>
+    </condition>
+  </extension>
+</include>
