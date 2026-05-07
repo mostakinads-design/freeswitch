@@ -1,0 +1,16 @@
+<include>
+  <gateway name="{{gateway_name}}">
+    <param name="username" value="{{username}}"/>
+    <param name="password" value="{{password}}"/>
+    <param name="realm" value="{{realm}}"/>
+    <param name="proxy" value="{{proxy}}"/>
+    <param name="register" value="{{register}}"/>
+    <param name="register-proxy" value="{{register_proxy}}"/>
+    <param name="expire-seconds" value="{{expire_seconds}}"/>
+    <param name="retry-seconds" value="30"/>
+    <param name="caller-id-in-from" value="true"/>
+    <param name="extension-in-contact" value="true"/>
+    <param name="register-transport" value="{{transport}}"/>
+    <param name="context" value="public"/>
+  </gateway>
+</include>

@@ -1,0 +1,20 @@
+<include>
+  <user id="{{extension}}">
+    <params>
+      <param name="password" value="{{password}}"/>
+      <param name="vm-password" value="{{voicemail_password}}"/>
+      <param name="vm-enabled" value="{{voicemail_enabled}}"/>
+    </params>
+    <variables>
+      <variable name="toll_allow" value="domestic,international"/>
+      <variable name="accountcode" value="{{extension}}"/>
+      <variable name="user_context" value="default"/>
+      <variable name="effective_caller_id_name" value="{{caller_id_name}}"/>
+      <variable name="effective_caller_id_number" value="{{caller_id_number}}"/>
+      <variable name="outbound_caller_id_name" value="{{caller_id_name}}"/>
+      <variable name="outbound_caller_id_number" value="{{caller_id_number}}"/>
+      <variable name="callgroup" value="{{callgroup}}"/>
+      <variable name="record_calls" value="{{record_calls}}"/>
+    </variables>
+  </user>
+</include>

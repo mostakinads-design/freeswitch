@@ -1,0 +1,35 @@
+<configuration name="callcenter.conf" description="CallCenter">
+  <settings>
+    <param name="odbc-dsn" value="mariadb://voipuser:VoipP@ss123!@localhost/voip_panel"/>
+    <param name="dbname" value="/var/lib/freeswitch/db/callcenter.db"/>
+  </settings>
+
+  <queues>
+    <!-- Queues will be dynamically generated from database -->
+    {{#queues}}
+    <queue name="{{name}}">
+      <param name="strategy" value="{{strategy}}"/>
+      <param name="moh-sound" value="{{moh_sound}}"/>
+      <param name="time-base-score" value="system"/>
+      <param name="max-wait-time" value="{{max_wait_time}}"/>
+      <param name="max-wait-time-with-no-agent" value="{{max_wait_time_with_no_agent}}"/>
+      <param name="max-wait-time-with-no-agent-time-reached" value="5"/>
+      <param name="tier-rules-apply" value="{{tier_rules_apply}}"/>
+      <param name="tier-rule-wait-second" value="{{tier_rule_wait_second}}"/>
+      <param name="tier-rule-wait-multiply-level" value="true"/>
+      <param name="tier-rule-no-agent-no-wait" value="false"/>
+      <param name="discard-abandoned-after" value="60"/>
+      <param name="abandoned-resume-allowed" value="false"/>
+      <param name="record-template" value="$${recordings_dir}/{{name}}_${strftime(%Y-%m-%d-%H-%M-%S)}_${caller_id_number}_${uuid}.wav"/>
+    </queue>
+    {{/queues}}
+  </queues>
+
+  <agents>
+    <!-- Agents will be dynamically loaded -->
+  </agents>
+
+  <tiers>
+    <!-- Tier associations will be dynamically loaded -->
+  </tiers>
+</configuration>
